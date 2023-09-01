@@ -9,19 +9,20 @@ function love.load()
     world:addCollisionClass('PlatformB')
     world:addCollisionClass('LWall')
     world:addCollisionClass('RWall')
-    world:addCollisionClass('LWall')
-    world:addCollisionClass('RWall')
+    world:addCollisionClass('Spikes')
     player = {}
+    player.dead = 0
     player.x = 5
     player.y = 500
     player.speed = 100
     player.collider = world:newBSGRectangleCollider(player.x, player.y, 50, 100, 15)
+    spikes = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
     ground = world:newRectangleCollider(0, 600, 800, 10)
     wallL = world:newRectangleCollider(-10, -1000, 10, 1600)
     wallR = world:newRectangleCollider(800, -1000, 10, 1600)
-    platformtop0 = world:newRectangleCollider(210, 230, 390, 5)
-    platformbottom0 = world:newRectangleCollider(210, 235, 390, 5)
-    platforml0 = world:newRectangleCollider(205, 230, 5, 10)
+    platformtop0 = world:newRectangleCollider(0, 230, 600, 5)
+    platformbottom0 = world:newRectangleCollider(0, 235, 600, 5)
+    platforml0 = world:newRectangleCollider(-5, 230, 5, 10)
     platformr0 = world:newRectangleCollider(600, 230, 5, 10)
     platformtop1 = world:newRectangleCollider(310, -55, 490, 5)
     platformbottom1 = world:newRectangleCollider(310, -50, 490, 5)
@@ -38,6 +39,7 @@ function love.load()
     platformbottom1:setType('static')
     platforml1:setType('static')
     platformr1:setType('static')
+    spikes:setType('static')
     ground:setCollisionClass('Floor')
     wallL:setCollisionClass('LWall')
     wallR:setCollisionClass('RWall')
@@ -49,12 +51,19 @@ function love.load()
     platforml1:setCollisionClass('RWall')
     platformtop1:setCollisionClass('Floor')
     platformbottom1:setCollisionClass('PlatformB')
+    spikes:setCollisionClass('Spikes')
     floor_detect = 0
     player.collider:setFixedRotation(true)
 
 end
 
 function love.update(dt)
+    if player.dead == 1 then
+        player.dead = 0
+        player.collider:setX(100)
+        player.collider:setY(500)
+        player.collider:setLinearVelocity( 0, 0 )
+    end
     if player.collider:enter('Floor') then
         floor_detect = 1
     elseif player.collider:exit('Floor') then
@@ -72,8 +81,9 @@ function love.update(dt)
     end
     if player.collider:enter('PlatformB') then
         player.collider:applyLinearImpulse(0, 1)
-    elseif player.collider:exit('PlatformB') then
-        player.collider:applyLinearImpulse(0, 1)
+    end
+    if player.collider:enter('Spikes') then
+        player.dead = 1
     end
     if floor_detect == 1 then
         playervelx = 0
