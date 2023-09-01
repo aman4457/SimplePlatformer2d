@@ -2,6 +2,8 @@
 
 function love.load()
     wf = require "Libraries/windfield"
+    camera  = require "Libraries/camera"
+    cam = camera()
     world = wf.newWorld(0, 1000)
     world:addCollisionClass('Floor')
     world:addCollisionClass('LWall')
@@ -132,8 +134,17 @@ function love.update(dt)
     end
     player.x = player.collider:getX()
     player.y = player.collider:getY()
+    cam:lookAt(400, player.y)
+    local w = love.graphics.getWidth()
+    local h = love.graphics.getHeight()
+    if cam.y > 300 then
+        cam.y = 300 
+    end
+
 end
 
 function love.draw()
-    world:draw()
+    cam:attach()
+        world:draw()
+    cam:detach()
 end
