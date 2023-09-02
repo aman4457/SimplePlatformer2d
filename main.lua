@@ -3,6 +3,9 @@
 function love.load()
     wf = require "Libraries/windfield"
     camera  = require "Libraries/camera"
+    sti = require 'Libraries/sti'
+    gameMap = sti('map/testmap.lua')
+    --gameMap:init('map/testmap.lua', '', -5, 0)
     cam = camera()
     world = wf.newWorld(0, 1000)
     world:addCollisionClass('Floor')
@@ -169,11 +172,19 @@ function love.update(dt)
         cam.y = 300 
     end
     world:update(dt)
+    gameMap:update(dt)
 
 end
 
 function love.draw()
     cam:attach()
+        gameMap:drawLayer(gameMap.layers["background"])
+        gameMap:drawLayer(gameMap.layers["platformBottoms"])
+        gameMap:drawLayer(gameMap.layers["PlatformTops"])
+        gameMap:drawLayer(gameMap.layers["platformL"])
+        gameMap:drawLayer(gameMap.layers["platformR"])
+        gameMap:drawLayer(gameMap.layers["Spikes"])
         world:draw()
     cam:detach()
+    
 end
