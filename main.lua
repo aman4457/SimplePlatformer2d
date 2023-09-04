@@ -12,49 +12,112 @@ function love.load()
     world:addCollisionClass('PlatformB')
     world:addCollisionClass('LWall')
     world:addCollisionClass('RWall')
-    world:addCollisionClass('Spikes')
+    world:addCollisionClass('DeathObjects')
     player = {}
     player.dead = 0
     player.x = 5
     player.y = 500
     player.speed = 100
     player.collider = world:newBSGRectangleCollider(player.x, player.y, 50, 100, 15)
-    spikes = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
-    ground = world:newRectangleCollider(0, 600, 800, 10)
-    wallL = world:newRectangleCollider(-10, -1000, 10, 1600)
-    wallR = world:newRectangleCollider(800, -1000, 10, 1600)
-    platformtop0 = world:newRectangleCollider(0, 230, 600, 5)
-    platformbottom0 = world:newRectangleCollider(0, 235, 600, 5)
-    platforml0 = world:newRectangleCollider(-5, 230, 5, 10)
-    platformr0 = world:newRectangleCollider(600, 230, 5, 10)
-    platformtop1 = world:newRectangleCollider(310, -55, 490, 5)
-    platformbottom1 = world:newRectangleCollider(310, -50, 490, 5)
-    platforml1 = world:newRectangleCollider(305, -55, 5, 10)
-    platformr1 = world:newRectangleCollider(800, -55, 5, 10)
-    ground:setType('static')
-    wallR:setType('static')
-    wallL:setType('static')
-    platformtop0:setType('static')
-    platformbottom0:setType('static')
-    platforml0:setType('static')
-    platformr0:setType('static')
-    platformtop1:setType('static')
-    platformbottom1:setType('static')
-    platforml1:setType('static')
-    platformr1:setType('static')
-    spikes:setType('static')
-    ground:setCollisionClass('Floor')
-    wallL:setCollisionClass('LWall')
-    wallR:setCollisionClass('RWall')
-    platformr0:setCollisionClass('LWall')
-    platforml0:setCollisionClass('RWall')
-    platformtop0:setCollisionClass('Floor')
-    platformr1:setCollisionClass('LWall')
-    platformbottom0:setCollisionClass('PlatformB')
-    platforml1:setCollisionClass('RWall')
-    platformtop1:setCollisionClass('Floor')
-    platformbottom1:setCollisionClass('PlatformB')
-    spikes:setCollisionClass('Spikes')
+    --deathobj = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
+    platformtops = {}
+    if gameMap.layers["PlatformTop"] then
+        for i, obj in pairs(gameMap.layers["PlatformTop"].objects) do
+            local ground = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            ground:setType('static')
+            ground:setCollisionClass('Floor')
+            table.insert(platformtops, ground)
+        end
+    end
+    platformbottoms = {}
+    if gameMap.layers["PlatfromBottom"] then
+        for i, obj in pairs(gameMap.layers["PlatfromBottom"].objects) do
+            local bottoms = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            bottoms:setType('static')
+            bottoms:setCollisionClass('PlatformB')
+            table.insert(platformbottoms, bottoms)
+        end
+    end
+    Lwalls = {}
+    if gameMap.layers["Lwall"] then
+        for i, obj in pairs(gameMap.layers["Lwall"].objects) do
+            local wallL  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            wallL:setType('static')
+            wallL:setCollisionClass('LWall')
+            table.insert(Lwalls, wallL)
+        end
+    end
+
+    Rwalls = {}
+    if gameMap.layers["Rwall"] then
+        for i, obj in pairs(gameMap.layers["Rwall"].objects) do
+            local wallR  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            wallR:setType('static')
+            wallR:setCollisionClass('RWall')
+            table.insert(Rwalls, wallR)
+        end
+    end
+
+    DeathObject = {}
+    if gameMap.layers["DeathObjects"] then
+        for i, obj in pairs(gameMap.layers["DeathObjects"].objects) do
+            local deathobj  = world:newBSGRectangleCollider(obj.x, obj.y, obj.width, obj.height, 30)
+            deathobj:setType('static')
+            deathobj:setCollisionClass('DeathObjects')
+            table.insert(DeathObject, deathobj)
+        end
+    end
+    platformls = {}
+    if gameMap.layers["platformL"] then
+        for i, obj in pairs(gameMap.layers["platformL"].objects) do
+            local platforml  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            platforml:setType('static')
+            platforml:setCollisionClass('RWall')
+            table.insert(platformls, platforml)
+        end
+    end
+    platformrs = {}
+    if gameMap.layers["platformR"] then
+        for i, obj in pairs(gameMap.layers["platformR"].objects) do
+            local platformr  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            platformr:setType('static')
+            platformr:setCollisionClass('LWall')
+            table.insert(platformrs, platformr)
+        end
+    end
+
+    --wallL = world:newRectangleCollider(-10, -1000, 10, 1600)
+    --wallR = world:newRectangleCollider(800, -1000, 10, 1600)
+    --platformtop0 = world:newRectangleCollider(0, 230, 600, 5)
+    --platformbottom0 = world:newRectangleCollider(0, 235, 600, 5)
+    --platforml0 = world:newRectangleCollider(-5, 230, 5, 10)
+    --platformr0 = world:newRectangleCollider(600, 230, 5, 10)
+    --platformtop1 = world:newRectangleCollider(310, -55, 490, 5)
+    --platformbottom1 = world:newRectangleCollider(310, -50, 490, 5)
+    --platforml1 = world:newRectangleCollider(305, -55, 5, 10)
+    --platformr1 = world:newRectangleCollider(800, -55, 5, 10)
+    --wallR:setType('static')
+    --wallL:setType('static')
+    --platformtop0:setType('static')
+    --platformbottom0:setType('static')
+   --platforml0:setType('static')
+    --platformr0:setType('static')
+    --platformtop1:setType('static')
+    --platformbottom1:setType('static')
+    --platforml1:setType('static')
+    --platformr1:setType('static')
+    --spikes:setType('static')
+    --wallL:setCollisionClass('LWall')
+    --wallR:setCollisionClass('RWall')
+    --platformr0:setCollisionClass('LWall')
+    --platforml0:setCollisionClass('RWall')
+    --platformtop0:setCollisionClass('Floor')
+    --platformr1:setCollisionClass('LWall')
+    --platformbottom0:setCollisionClass('PlatformB')
+    --platforml1:setCollisionClass('RWall')
+    --platformtop1:setCollisionClass('Floor')
+    --platformbottom1:setCollisionClass('PlatformB')
+    --spikes:setCollisionClass('DeathObjects')
     floor_detect = 0
     player.collider:setFixedRotation(true)
 
@@ -85,7 +148,7 @@ function love.update(dt)
     if player.collider:enter('PlatformB') then
         player.collider:applyLinearImpulse(0, 1)
     end
-    if player.collider:enter('Spikes') then
+    if player.collider:enter('DeathObjects') then
         player.dead = 1
     end
     if floor_detect == 1 then
@@ -179,11 +242,6 @@ end
 function love.draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers["background"])
-        gameMap:drawLayer(gameMap.layers["platformBottoms"])
-        gameMap:drawLayer(gameMap.layers["PlatformTops"])
-        gameMap:drawLayer(gameMap.layers["platformL"])
-        gameMap:drawLayer(gameMap.layers["platformR"])
-        gameMap:drawLayer(gameMap.layers["Spikes"])
         world:draw()
     cam:detach()
     
