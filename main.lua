@@ -23,7 +23,10 @@ function love.load()
     platformtops = {}
     if gameMap.layers["PlatformTop"] then
         for i, obj in pairs(gameMap.layers["PlatformTop"].objects) do
-            local ground = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["PlatformTop"].x 
+            oy = obj.y + gameMap.layers["PlatformTop"].y 
+            local ground = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             ground:setType('static')
             ground:setCollisionClass('Floor')
             table.insert(platformtops, ground)
@@ -32,7 +35,10 @@ function love.load()
     platformbottoms = {}
     if gameMap.layers["PlatfromBottom"] then
         for i, obj in pairs(gameMap.layers["PlatfromBottom"].objects) do
-            local bottoms = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["PlatfromBottom"].x 
+            oy = obj.y + gameMap.layers["PlatfromBottom"].y 
+            local bottoms = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             bottoms:setType('static')
             bottoms:setCollisionClass('PlatformB')
             table.insert(platformbottoms, bottoms)
@@ -41,7 +47,10 @@ function love.load()
     Lwalls = {}
     if gameMap.layers["Lwall"] then
         for i, obj in pairs(gameMap.layers["Lwall"].objects) do
-            local wallL  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["Lwall"].x 
+            oy = obj.y + gameMap.layers["Lwall"].y 
+            local wallL  = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             wallL:setType('static')
             wallL:setCollisionClass('LWall')
             table.insert(Lwalls, wallL)
@@ -51,7 +60,10 @@ function love.load()
     Rwalls = {}
     if gameMap.layers["Rwall"] then
         for i, obj in pairs(gameMap.layers["Rwall"].objects) do
-            local wallR  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["Rwall"].x 
+            oy = obj.y + gameMap.layers["Rwall"].y 
+            local wallR  = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             wallR:setType('static')
             wallR:setCollisionClass('RWall')
             table.insert(Rwalls, wallR)
@@ -61,7 +73,10 @@ function love.load()
     DeathObject = {}
     if gameMap.layers["DeathObjects"] then
         for i, obj in pairs(gameMap.layers["DeathObjects"].objects) do
-            local deathobj  = world:newBSGRectangleCollider(obj.x, obj.y, obj.width, obj.height, 30)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["DeathObjects"].x 
+            oy = obj.y + gameMap.layers["DeathObjects"].y 
+            local deathobj  = world:newBSGRectangleCollider(ox, oy, obj.width, obj.height, 30)
             deathobj:setType('static')
             deathobj:setCollisionClass('DeathObjects')
             table.insert(DeathObject, deathobj)
@@ -70,7 +85,10 @@ function love.load()
     platformls = {}
     if gameMap.layers["platformL"] then
         for i, obj in pairs(gameMap.layers["platformL"].objects) do
-            local platforml  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["platformL"].x 
+            oy = obj.y + gameMap.layers["platformL"].y 
+            local platforml  = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             platforml:setType('static')
             platforml:setCollisionClass('RWall')
             table.insert(platformls, platforml)
@@ -79,7 +97,10 @@ function love.load()
     platformrs = {}
     if gameMap.layers["platformR"] then
         for i, obj in pairs(gameMap.layers["platformR"].objects) do
-            local platformr  = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["platformR"].x 
+            oy = obj.y + gameMap.layers["platformR"].y 
+            local platformr  = world:newRectangleCollider(ox, oy, obj.width, obj.height)
             platformr:setType('static')
             platformr:setCollisionClass('LWall')
             table.insert(platformrs, platformr)
