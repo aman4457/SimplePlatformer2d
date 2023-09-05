@@ -172,6 +172,9 @@ function love.update(dt)
     if player.collider:enter('DeathObjects') then
         player.dead = 1
     end
+    if player.y > 700 then
+        player.dead = 1
+    end
     if floor_detect == 1 then
         playervelx = 0
 
