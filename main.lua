@@ -8,19 +8,7 @@ function love.load()
     gameMap = sti('map/testmap.lua')
     --gameMap:init('map/testmap.lua', '', -5, 0)
     cam = camera()
-    world = wf.newWorld(0, 1000)
-    world:addCollisionClass('Floor')
-    world:addCollisionClass('PlatformB')
-    world:addCollisionClass('LWall')
-    world:addCollisionClass('RWall')
-    world:addCollisionClass('DeathObjects')
-    player = {}
-    player.dead = 0
-    player.x = 5
-    player.y = 500
-    player.speed = 100
-    player.collider = world:newBSGRectangleCollider(player.x, player.y, 50, 100, 15)
-    player.collider:setFixedRotation(true)
+    --menu = wf.newWorld(0, 1000)
     loadworld()
     floor_detect = 0
     --deathobj = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
@@ -59,7 +47,23 @@ function love.load()
 
 
 end
+function unloadworld()
+    world:destroy()
+end
 function loadworld()
+    world = wf.newWorld(0, 1000)
+    world:addCollisionClass('Floor')
+    world:addCollisionClass('PlatformB')
+    world:addCollisionClass('LWall')
+    world:addCollisionClass('RWall')
+    world:addCollisionClass('DeathObjects')
+    player = {}
+    player.dead = 0
+    player.x = 5
+    player.y = 500
+    player.speed = 100
+    player.collider = world:newBSGRectangleCollider(player.x, player.y, 50, 100, 15)
+    player.collider:setFixedRotation(true)
     platformtops = {}
     if gameMap.layers["PlatformTop"] then
         for i, obj in pairs(gameMap.layers["PlatformTop"].objects) do
@@ -151,11 +155,16 @@ function love.update(dt)
     if state.playing then
         updateplaying(dt)
     end
-    if state.menu then
-
+    if state.menu then    
     end
 end
-
+function love.mousepressed(x, y, button, istouch)
+    if button == 1 then 
+        if x > 350 and x < 450 and y > 285 and y < 300 then
+           startbutton = true
+        end
+    end
+end
 function love.draw()
     if state.playing then 
         cam:attach()
@@ -164,10 +173,17 @@ function love.draw()
     cam:detach()
     end 
     if state.menu then
+        --smenu:draw()
         love.graphics.setBackgroundColor( 0, 0, 0)
         love.graphics.setColor(1, 1, 1)
         --love.graphics.draw('text', 25, 25)
-        love.graphics.print("THIS IS A MENU",50,50 )
+        love.graphics.print("begin game",350,285 )
+        if startbutton then
+            love.graphics.clear(0,0,0,0)
+            loadworld()
+            state.menu=false
+            state.playing=true
+        end
     end
 end
 
