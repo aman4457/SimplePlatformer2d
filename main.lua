@@ -1,6 +1,7 @@
 
 
 function love.load()
+    state = {menu=true, playing=false}
     wf = require "Libraries/windfield"
     camera  = require "Libraries/camera"
     sti = require 'Libraries/sti'
@@ -19,7 +20,46 @@ function love.load()
     player.y = 500
     player.speed = 100
     player.collider = world:newBSGRectangleCollider(player.x, player.y, 50, 100, 15)
+    player.collider:setFixedRotation(true)
+    loadworld()
+    floor_detect = 0
     --deathobj = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
+    --wallL = world:newRectangleCollider(-10, -1000, 10, 1600)
+    --wallR = world:newRectangleCollider(800, -1000, 10, 1600)
+    --platformtop0 = world:newRectangleCollider(0, 230, 600, 5)
+    --platformbottom0 = world:newRectangleCollider(0, 235, 600, 5)
+    --platforml0 = world:newRectangleCollider(-5, 230, 5, 10)
+    --platformr0 = world:newRectangleCollider(600, 230, 5, 10)
+    --platformtop1 = world:newRectangleCollider(310, -55, 490, 5)
+    --platformbottom1 = world:newRectangleCollider(310, -50, 490, 5)
+    --platforml1 = world:newRectangleCollider(305, -55, 5, 10)
+    --platformr1 = world:newRectangleCollider(800, -55, 5, 10)
+    --wallR:setType('static')
+    --wallL:setType('static')
+    --platformtop0:setType('static')
+    --platformbottom0:setType('static')
+    --platforml0:setType('static')
+    --platformr0:setType('static')
+    --platformtop1:setType('static')
+    --platformbottom1:setType('static')
+    --platforml1:setT ype('static')
+    --platformr1:setType('static')
+    --spikes:setType('static')
+    --wallL:setCollisionClass('LWall')
+    --wallR:setCollisionClass('RWall')
+    --platformr0:setCollisionClass('LWall')
+    --platforml0:setCollisionClass('RWall')
+    --platformtop0:setCollisionClass('Floor')
+    --platformr1:setCollisionClass('LWall')
+    --platformbottom0:setCollisionClass('PlatformB')
+    --platforml1:setCollisionClass('RWall')
+    --platformtop1:setCollisionClass('Floor')
+    --platformbottom1:setCollisionClass('PlatformB')
+    --spikes:setCollisionClass('DeathObjects')
+
+
+end
+function loadworld()
     platformtops = {}
     if gameMap.layers["PlatformTop"] then
         for i, obj in pairs(gameMap.layers["PlatformTop"].objects) do
@@ -106,45 +146,32 @@ function love.load()
             table.insert(platformrs, platformr)
         end
     end
+end
+function love.update(dt)
+    if state.playing then
+        updateplaying(dt)
+    end
+    if state.menu then
 
-    --wallL = world:newRectangleCollider(-10, -1000, 10, 1600)
-    --wallR = world:newRectangleCollider(800, -1000, 10, 1600)
-    --platformtop0 = world:newRectangleCollider(0, 230, 600, 5)
-    --platformbottom0 = world:newRectangleCollider(0, 235, 600, 5)
-    --platforml0 = world:newRectangleCollider(-5, 230, 5, 10)
-    --platformr0 = world:newRectangleCollider(600, 230, 5, 10)
-    --platformtop1 = world:newRectangleCollider(310, -55, 490, 5)
-    --platformbottom1 = world:newRectangleCollider(310, -50, 490, 5)
-    --platforml1 = world:newRectangleCollider(305, -55, 5, 10)
-    --platformr1 = world:newRectangleCollider(800, -55, 5, 10)
-    --wallR:setType('static')
-    --wallL:setType('static')
-    --platformtop0:setType('static')
-    --platformbottom0:setType('static')
-   --platforml0:setType('static')
-    --platformr0:setType('static')
-    --platformtop1:setType('static')
-    --platformbottom1:setType('static')
-    --platforml1:setType('static')
-    --platformr1:setType('static')
-    --spikes:setType('static')
-    --wallL:setCollisionClass('LWall')
-    --wallR:setCollisionClass('RWall')
-    --platformr0:setCollisionClass('LWall')
-    --platforml0:setCollisionClass('RWall')
-    --platformtop0:setCollisionClass('Floor')
-    --platformr1:setCollisionClass('LWall')
-    --platformbottom0:setCollisionClass('PlatformB')
-    --platforml1:setCollisionClass('RWall')
-    --platformtop1:setCollisionClass('Floor')
-    --platformbottom1:setCollisionClass('PlatformB')
-    --spikes:setCollisionClass('DeathObjects')
-    floor_detect = 0
-    player.collider:setFixedRotation(true)
-
+    end
 end
 
-function love.update(dt)
+function love.draw()
+    if state.playing then 
+        cam:attach()
+        gameMap:drawLayer(gameMap.layers["background"])
+        world:draw()
+    cam:detach()
+    end 
+    if state.menu then
+        love.graphics.setBackgroundColor( 0, 0, 0)
+        love.graphics.setColor(1, 1, 1)
+        --love.graphics.draw('text', 25, 25)
+        love.graphics.print("THIS IS A MENU",50,50 )
+    end
+end
+
+function updateplaying(dt)
     if player.dead == 1 then
         player.dead = 0
         player.collider:setX(100)
@@ -260,13 +287,4 @@ function love.update(dt)
     end
     world:update(dt)
     gameMap:update(dt)
-
-end
-
-function love.draw()
-    cam:attach()
-        gameMap:drawLayer(gameMap.layers["background"])
-        world:draw()
-    cam:detach()
-    
 end
