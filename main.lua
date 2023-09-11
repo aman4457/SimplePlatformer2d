@@ -155,13 +155,20 @@ function love.update(dt)
     if state.playing then
         updateplaying(dt)
     end
-    if state.menu then    
-    end
 end
 function love.mousepressed(x, y, button, istouch)
-    if button == 1 then 
-        if x > 350 and x < 450 and y > 285 and y < 300 then
-           startbutton = true
+    if state.menu then
+        if button == 1 then 
+            if x > 350 and x < 450 and y > 285 and y < 300 then
+            startbutton = true
+            end
+        end
+    end
+    if state.playing then
+        if button == 1 then 
+            if x > 730 and x < 800 and y > 0 and y < 15 then
+            mainmenu = true
+            end
         end
     end
 end
@@ -170,7 +177,15 @@ function love.draw()
         cam:attach()
         gameMap:drawLayer(gameMap.layers["background"])
         world:draw()
-    cam:detach()
+        cam:detach()
+        love.graphics.print("main menu",725,0)
+        if mainmenu then
+            love.graphics.clear(0,0,0,0)
+            unloadworld()
+            state.menu=true
+            state.playing=false
+            mainmenu = false
+        end
     end 
     if state.menu then
         --smenu:draw()
@@ -183,6 +198,7 @@ function love.draw()
             loadworld()
             state.menu=false
             state.playing=true
+            startbutton = false
         end
     end
 end
