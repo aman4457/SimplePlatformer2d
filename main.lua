@@ -5,10 +5,16 @@ function love.load()
     wf = require "Libraries/windfield"
     camera  = require "Libraries/camera"
     sti = require 'Libraries/sti'
-    gameMap = sti('map/testmap.lua')
+    --gameMap = sti('map/testmap.lua')
     --gameMap:init('map/testmap.lua', '', -5, 0)
     cam = camera()
     --menu = wf.newWorld(0, 1000)
+    if love.filesystem.getInfo('savefile') ~= nil then
+        unlockedlvls = 1
+    else 
+        unlockedlvls = 0
+        level = 'map/testmap.lua'
+    end
     loadworld()
     floor_detect = 0
     --deathobj = world:newBSGRectangleCollider(0, 180, 100, 50, 30)
@@ -51,12 +57,14 @@ function unloadworld()
     world:destroy()
 end
 function loadworld()
+    gameMap = sti(level)
     world = wf.newWorld(0, 1000)
     world:addCollisionClass('Floor')
     world:addCollisionClass('PlatformB')
     world:addCollisionClass('LWall')
     world:addCollisionClass('RWall')
     world:addCollisionClass('DeathObjects')
+    world:addCollisionClass('WinObjects')
     player = {}
     player.dead = 0
     player.x = 5
@@ -150,6 +158,18 @@ function loadworld()
             table.insert(platformrs, platformr)
         end
     end
+    winzones = {}
+    if gameMap.layers["levelcomplete"] then
+        for i, obj in pairs(gameMap.layers["levelcomplete"].objects) do
+            local ox, oy = 0;
+            ox = obj.x + gameMap.layers["levelcomplete"].x 
+            oy = obj.y + gameMap.layers["levelcomplete"].y 
+            local platformr  = world:newRectangleCollider(ox, oy, obj.width, obj.height)
+            platformr:setType('static')
+            platformr:setCollisionClass('WinObjects')
+            table.insert(winzones, platformr)
+        end
+    end
 end
 function love.update(dt)
     if state.playing then
@@ -215,6 +235,9 @@ function updateplaying(dt)
     elseif player.collider:exit('Floor') then
         floor_detect = 0
     end
+    if player.collider:enter('WinObjects') then
+        win_detect = 1
+    end
     if player.collider:enter('LWall') then
         Lwall_detect = 1
     elseif player.collider:exit('LWall') then
@@ -258,7 +281,7 @@ function updateplaying(dt)
             playervelx = player.speed * 0.2
         elseif love.keyboard.isDown('a') then
             playervelx = player.speed * -0.2
-        elseif love.keyboard.isDown('d')  then
+        elseif love.keyboard.isDown('d') then
             playervelx = player.speed * 0.2
         end
         player.collider:applyLinearImpulse(playervelx, 0)
@@ -308,6 +331,9 @@ function updateplaying(dt)
         if love.keyboard.isDown('w') then  
             player.collider:applyLinearImpulse(0, -2700)
         end
+    end
+    if win_detect == 1 then
+        win_detect = 0
     end
     player.x = player.collider:getX()
     player.y = player.collider:getY()
