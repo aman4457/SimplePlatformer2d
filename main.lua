@@ -10,10 +10,14 @@ function love.load()
     cam = camera()
     --menu = wf.newWorld(0, 1000)
     if love.filesystem.getInfo('savefile') ~= nil then
-        unlockedlvls = 1
+        contents, size = love.filesystem.read( 'savefile', 1 )
+        unlockedlvls = tonumber(contents)
+        level = 'map/testmap.lua'
     else 
         unlockedlvls = 0
         level = 'map/testmap.lua'
+        file = love.filesystem.newFile('savefile')
+        success, message = love.filesystem.write( 'savefile', unlockedlvls, 1 )
     end
     loadworld()
     floor_detect = 0
@@ -55,6 +59,10 @@ function love.load()
 end
 function unloadworld()
     world:destroy()
+    if love.filesystem.getInfo('savefile') ~= nil then
+        contents, size = love.filesystem.read( 'savefile', 1 )
+        unlockedlvls = tonumber(contents)
+    end
 end
 function loadworld()
     gameMap = sti(level)
@@ -179,8 +187,18 @@ end
 function love.mousepressed(x, y, button, istouch)
     if state.menu then
         if button == 1 then 
-            if x > 350 and x < 450 and y > 285 and y < 300 then
-            startbutton = true
+            if levelbutton ~= true then
+                if x > 350 and x < 450 and y > 285 and y < 305 then
+                    startbutton = true
+                end
+                if unlockedlvls >= 1 then
+                    if x > 350 and x < 450 and y > 306 and y < 326 then
+                        levelbutton = true
+                    end
+                end
+            end
+            if x > 730 and x < 800 and y > 0 and y < 15 then
+                mainmenu = true
             end
         end
     end
@@ -213,12 +231,30 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         --love.graphics.draw('text', 25, 25)
         love.graphics.print("begin game",350,285 )
+        if unlockedlvls >= 1 then
+            love.graphics.print("level select",350,310)
+        end
         if startbutton then
             love.graphics.clear(0,0,0,0)
             loadworld()
             state.menu=false
             state.playing=true
             startbutton = false
+        end
+        if mainmenu then
+            love.graphics.clear(0,0,0,0)
+            state.menu=false
+            state.menu=true
+            mainmenu = false
+            levelbutton = false
+        end
+        if levelbutton then
+            love.graphics.clear(0,0,0,0)
+            love.graphics.print("main menu",725,0)
+            for i = 0, unlockedlvls, 1 do
+                love.graphics.print(("level " .. i + 1),350,(285 + i * 20))
+            end
+            
         end
     end
 end
@@ -332,9 +368,6 @@ function updateplaying(dt)
             player.collider:applyLinearImpulse(0, -2700)
         end
     end
-    if win_detect == 1 then
-        win_detect = 0
-    end
     player.x = player.collider:getX()
     player.y = player.collider:getY()
     cam:lookAt(400, player.y)
@@ -345,4 +378,13 @@ function updateplaying(dt)
     end
     world:update(dt)
     gameMap:update(dt)
+    if win_detect == 1 then
+        success, message = love.filesystem.write( 'savefile', unlockedlvls + 1, 1 )
+        win_detect = 0
+        love.graphics.clear(0,0,0,0)
+        unloadworld()
+        state.menu=true
+        state.playing=false
+        mainmenu = false
+    end
 end
