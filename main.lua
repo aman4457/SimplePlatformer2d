@@ -12,10 +12,10 @@ function love.load()
     if love.filesystem.getInfo('savefile') ~= nil then
         contents, size = love.filesystem.read( 'savefile', 1 )
         unlockedlvls = tonumber(contents)
-        level = 'map/testmap.lua'
+        level = 'map/level1.lua'
     else 
         unlockedlvls = 0
-        level = 'map/testmap.lua'
+        level = 'map/level1.lua'
         file = love.filesystem.newFile('savefile')
         success, message = love.filesystem.write( 'savefile', unlockedlvls, 1 )
     end
@@ -196,9 +196,16 @@ function love.mousepressed(x, y, button, istouch)
                         levelbutton = true
                     end
                 end
-            end
-            if x > 730 and x < 800 and y > 0 and y < 15 then
-                mainmenu = true
+            else
+                if x > 730 and x < 800 and y > 0 and y < 15 then
+                    mainmenu = true
+                end
+                for i = 0, unlockedlvls, 1 do
+                    if x > 350 and x < 450 and y > 285 + i * 20 and y < 305 + i * 20 then
+                        levelnum = i + 1
+                        levelstart = true
+                    end
+                end
             end
         end
     end
@@ -255,6 +262,15 @@ function love.draw()
                 love.graphics.print(("level " .. i + 1),350,(285 + i * 20))
             end
             
+        end
+        if levelstart then
+            love.graphics.clear(0,0,0,0)
+            level = ("map/level"..levelnum..".lua")
+            loadworld()
+            state.menu=false
+            state.playing=true
+            levelstart = false
+            levelbutton = false
         end
     end
 end
@@ -379,7 +395,9 @@ function updateplaying(dt)
     world:update(dt)
     gameMap:update(dt)
     if win_detect == 1 then
-        success, message = love.filesystem.write( 'savefile', unlockedlvls + 1, 1 )
+        if unlockedlvls <= 0 then
+            success, message = love.filesystem.write( 'savefile', unlockedlvls + 1, 1 )
+        end
         win_detect = 0
         love.graphics.clear(0,0,0,0)
         unloadworld()
