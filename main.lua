@@ -47,6 +47,7 @@ function love.load()
     end
     loadworld()
     floor_detect = 0
+    numofmaps = 2
 
 end
 function unloadworld()
@@ -230,7 +231,7 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         --love.graphics.draw('text', 25, 25)
         love.graphics.print("begin game",350,285 )
-        if unlockedlvls >= 1 then
+        if unlockedlvls >= (numofmaps - 1)  then
             love.graphics.print("level select",350,310)
         end
         if startbutton then
